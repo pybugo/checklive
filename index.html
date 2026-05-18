@@ -267,9 +267,44 @@
             opacity: 1;
             bottom: 130%;
         }
+
+        /* --- THÊM: CSS HỖ TRỢ MOBILE & TỐI ƯU --- */
+        @media (pointer: coarse) {
+            /* Ẩn con trỏ chuột ảo trên màn hình cảm ứng */
+            #cursor-dot, #cursor-outline { display: none !important; }
+            body, .interactive { cursor: auto !important; }
+        }
+
+        @media (max-width: 768px) {
+            /* Hủy hiệu ứng nghiêng 3D trên màn hình nhỏ để tránh giật lag layout */
+            .tilt-card-inner {
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+    
+    <style>
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        input, textarea {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
     </style>
 </head>
 <body>
+
+    <div id="security-warning" class="fixed top-6 left-1/2 transform -translate-x-1/2 -translate-y-24 opacity-0 transition-all duration-500 z-[99999] glass-panel px-6 py-3 border border-red-500/50 flex items-center gap-3 bg-red-900/30 backdrop-blur-xl shadow-[0_0_20px_rgba(239,68,68,0.3)] rounded-full pointer-events-none">
+        <i class="fa-solid fa-shield-halved text-red-500 text-xl animate-pulse"></i>
+        <span class="text-white text-sm font-mono tracking-wide">SYSTEM: Access Denied. Action Blocked.</span>
+    </div>
 
     <div id="loader">
         <div class="loader-text mb-4" id="loading-text">INITIALIZING...</div>
@@ -325,9 +360,17 @@
                     Hire Me
                 </a>
             </div>
-            <button class="md:hidden text-gray-300 hover:text-white interactive">
+            <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white interactive">
                 <i class="fas fa-bars text-xl"></i>
             </button>
+        </div>
+        
+        <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-xl border-t border-white/10 flex flex-col p-6 space-y-4 shadow-2xl z-50">
+            <a href="#about" class="text-base font-medium text-gray-300 hover:text-cyan-400 transition-colors">About</a>
+            <a href="#projects" class="text-base font-medium text-gray-300 hover:text-cyan-400 transition-colors">Projects</a>
+            <a href="#utilities" class="text-base font-medium text-gray-300 hover:text-cyan-400 transition-colors">Utilities</a>
+            <a href="#experience" class="text-base font-medium text-gray-300 hover:text-cyan-400 transition-colors">Experience</a>
+            <a href="#contact" class="px-5 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg text-sm font-bold text-center mt-2">Hire Me</a>
         </div>
     </nav>
 
@@ -614,38 +657,44 @@
                 </div>
 
                 <div class="relative border-l border-gray-800 ml-4 md:ml-0">
-                    <div class="mb-12 ml-8 md:ml-10 relative reveal">
-                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-purple-500 rounded-full border-4 border-[#050505] shadow-[0_0_15px_rgba(168,85,247,0.8)] animate-pulse"></div>
-                        <div class="glass-panel p-6 hover-glow border-l-2 border-l-purple-500">
-                            <span class="text-xs font-mono text-purple-400 mb-2 block">> 2024 - Present</span>
-                            <h3 class="text-xl font-display font-bold text-white mb-1">Web Dev & Core Fundamentals</h3>
-                            <p class="text-sm text-gray-300 font-medium mb-3">Modern Tools & Algorithms</p>
-                            <p class="text-gray-400 text-sm leading-relaxed">
-                                Expanding into modern front-end frameworks and full-stack architecture. Previously, I dedicated significant time to studying data structures and algorithms in C++ as preparation for IT specialized schools (ôn chuyên Tin).
-                            </p>
+                    <div class="mb-12 ml-8 md:ml-10 relative reveal tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-purple-500 rounded-full border-4 border-[#050505] shadow-[0_0_15px_rgba(168,85,247,0.8)] animate-pulse"></div>
+                            <div class="glass-panel p-6 hover-glow border-l-2 border-l-purple-500">
+                                <span class="text-xs font-mono text-purple-400 mb-2 block">> 2024 - Present</span>
+                                <h3 class="text-xl font-display font-bold text-white mb-1">Web Dev & Core Fundamentals</h3>
+                                <p class="text-sm text-gray-300 font-medium mb-3">Modern Tools & Algorithms</p>
+                                <p class="text-gray-400 text-sm leading-relaxed">
+                                    Expanding into modern front-end frameworks and full-stack architecture. Previously, I dedicated significant time to studying data structures and algorithms in C++ as preparation for IT specialized schools (ôn chuyên Tin).
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-12 ml-8 md:ml-10 relative reveal">
-                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-cyan-500 rounded-full border-4 border-[#050505]"></div>
-                        <div class="glass-panel p-6 hover-glow-cyan">
-                            <span class="text-xs font-mono text-cyan-400 mb-2 block">> 2022 - 2024</span>
-                            <h3 class="text-xl font-display font-bold text-white mb-1">Automation & Discord Bots</h3>
-                            <p class="text-sm text-gray-300 font-medium mb-3">Python / API Integration</p>
-                            <p class="text-gray-400 text-sm leading-relaxed">
-                                Built Python-based automation scripts and Discord bots. Focused on web scraping, data formatting, and bridging different APIs to streamline community management tasks.
-                            </p>
+                    <div class="mb-12 ml-8 md:ml-10 relative reveal tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-cyan-500 rounded-full border-4 border-[#050505]"></div>
+                            <div class="glass-panel p-6 hover-glow-cyan border-l-2 border-l-cyan-500/50">
+                                <span class="text-xs font-mono text-cyan-400 mb-2 block">> 2022 - 2024</span>
+                                <h3 class="text-xl font-display font-bold text-white mb-1">Automation & Discord Bots</h3>
+                                <p class="text-sm text-gray-300 font-medium mb-3">Python / API Integration</p>
+                                <p class="text-gray-400 text-sm leading-relaxed">
+                                    Built Python-based automation scripts and Discord bots. Focused on web scraping, data formatting, and bridging different APIs to streamline community management tasks.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="ml-8 md:ml-10 relative reveal">
-                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-gray-600 rounded-full border-4 border-[#050505]"></div>
-                        <div class="glass-panel p-6">
-                            <span class="text-xs font-mono text-gray-500 mb-2 block">> 2020 - 2022</span>
-                            <h3 class="text-xl font-display font-bold text-gray-300 mb-1">Early Web & Game Services</h3>
-                            <p class="text-gray-500 text-sm leading-relaxed">
-                                Ignited my passion for coding by developing automated game shops for Free Fire and setting up Social Media Marketing (SMM) web panels. Gained foundational knowledge in hosting, PHP, and database management.
-                            </p>
+                    <div class="ml-8 md:ml-10 relative reveal tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-gray-600 rounded-full border-4 border-[#050505]"></div>
+                            <div class="glass-panel p-6 border-l-2 border-l-gray-600 hover-glow">
+                                <span class="text-xs font-mono text-gray-500 mb-2 block">> 2020 - 2022</span>
+                                <h3 class="text-xl font-display font-bold text-gray-300 mb-1">Early Web & Game Services</h3>
+                                <p class="text-gray-500 text-sm leading-relaxed">
+                                    Ignited my passion for coding by developing automated game shops for Free Fire and setting up Social Media Marketing (SMM) web panels. Gained foundational knowledge in hosting, PHP, and database management.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -653,39 +702,41 @@
         </section>
 
         <section id="contact" class="py-24 px-6 relative">
-            <div class="max-w-4xl mx-auto glass-panel p-8 md:p-12 reveal shadow-2xl shadow-purple-900/10">
-                <div class="flex flex-col md:flex-row gap-12">
-                    <div class="md:w-1/2">
-                        <h2 class="font-display text-4xl font-bold mb-4">Let's <span class="text-gradient">Talk</span></h2>
-                        <p class="text-gray-400 mb-8">Looking to start a project or just want to say hi? My inbox is always open.</p>
-                        
-                        <div class="space-y-4 font-mono text-sm">
-                            <div class="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors interactive w-fit">
-                                <i class="fa-solid fa-envelope text-xl w-6"></i> contact@kacestore.online
-                            </div>
-                            <div class="flex items-center gap-4 text-gray-300 hover:text-purple-400 transition-colors interactive w-fit">
-                                <i class="fa-solid fa-location-dot text-xl w-6 text-center"></i> Hoa Lư, Ninh Bình
+            <div class="max-w-4xl mx-auto reveal">
+                <div class="glass-panel p-8 md:p-12 shadow-2xl shadow-purple-900/10 hover-glow-cyan">
+                    <div class="flex flex-col md:flex-row gap-12">
+                        <div class="md:w-1/2">
+                            <h2 class="font-display text-4xl font-bold mb-4">Let's <span class="text-gradient">Talk</span></h2>
+                            <p class="text-gray-400 mb-8">Looking to start a project or just want to say hi? My inbox is always open.</p>
+                            
+                            <div class="space-y-4 font-mono text-sm">
+                                <div class="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors interactive w-fit">
+                                    <i class="fa-solid fa-envelope text-xl w-6"></i> contact@thvnhx.com
+                                </div>
+                                <div class="flex items-center gap-4 text-gray-300 hover:text-purple-400 transition-colors interactive w-fit">
+                                    <i class="fa-solid fa-location-dot text-xl w-6 text-center"></i> Hoa Lư, Ninh Bình
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="md:w-1/2">
-                        <form id="contactForm" class="space-y-4">
-                            <div class="space-y-1">
-                                <input type="text" id="name" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Name />">
-                            </div>
-                            <div class="space-y-1">
-                                <input type="email" id="email" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Email />">
-                            </div>
-                            <div class="space-y-1">
-                                <textarea id="message" required rows="4" class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive resize-none font-mono text-sm" placeholder="<Message>...</Message>"></textarea>
-                            </div>
-                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all flex justify-center items-center gap-2 interactive group">
-                                Execute Submit
-                                <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
-                            </button>
-                            <p id="formStatus" class="text-xs font-mono text-green-400 mt-2 hidden text-center">Message successfully transmitted.</p>
-                        </form>
+                        <div class="md:w-1/2">
+                            <form id="contactForm" class="space-y-4">
+                                <div class="space-y-1">
+                                    <input type="text" id="name" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Name />">
+                                </div>
+                                <div class="space-y-1">
+                                    <input type="email" id="email" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Email />">
+                                </div>
+                                <div class="space-y-1">
+                                    <textarea id="message" required rows="4" class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive resize-none font-mono text-sm" placeholder="<Message>...</Message>"></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all flex justify-center items-center gap-2 interactive group">
+                                    Execute Submit
+                                    <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                                </button>
+                                <p id="formStatus" class="text-xs font-mono text-green-400 mt-2 hidden text-center">Message successfully transmitted.</p>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -696,7 +747,7 @@
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
             <div class="text-gray-500 text-sm font-medium flex items-center gap-2">
                 <i class="fa-solid fa-layer-group text-purple-500"></i>
-                © 2026 thvnhx (Đàm Phú Thành).
+                © 2026 thvnhX (Đàm Phú Thành).
             </div>
             
             <div class="font-mono text-sm text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded bg-cyan-500/10">
@@ -716,6 +767,16 @@
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
 
     <script>
+        // --- THÊM: LOGIC MOBILE MENU ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
         // 1. Loading Screen
         window.addEventListener('load', () => {
             const loaderBar = document.getElementById('loader-bar');
@@ -766,6 +827,27 @@
         });
         gsap.ticker.lagSmoothing(0);
 
+        // ĐÂY LÀ ĐOẠN JS FIX LỖI CLICK ANCHOR SCROLL MƯỢT CẢ MOBILE LẪN DESKTOP
+        document.querySelectorAll('nav a[href^="#"], a[href^="#projects"], a[href^="#contact"], a[href^="#utilities"], #mobileMenu a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // Ẩn menu mobile nếu đang mở
+                if(mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    lenis.scrollTo(target, { 
+                        offset: -80, 
+                        duration: 1.5, 
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                }
+            });
+        });
+
         // 3. Custom Cursor - GPU Accelerated (No Lag)
         const cursorDot = document.getElementById('cursor-dot');
         const cursorOutline = document.getElementById('cursor-outline');
@@ -788,7 +870,11 @@
             cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0)`;
             requestAnimationFrame(renderCursor);
         }
-        requestAnimationFrame(renderCursor);
+        
+        // Không render cursor trên mobile
+        if(window.innerWidth > 768) {
+            requestAnimationFrame(renderCursor);
+        }
 
         // Hover states
         const interactables = document.querySelectorAll('.interactive, a, button, input, textarea');
@@ -935,6 +1021,59 @@
                     status.style.display = 'none';
                 }, 3000);
             }, 1500);
+        });
+
+        // ==========================================
+        // THÊM: HỆ THỐNG BẢO MẬT & CẢNH BÁO
+        // ==========================================
+        
+        // Hàm hiển thị cảnh báo
+        const showSecurityWarning = () => {
+            const warningBox = document.getElementById('security-warning');
+            if (warningBox) {
+                // Kéo xuống hiển thị
+                warningBox.classList.remove('-translate-y-24', 'opacity-0');
+                warningBox.classList.add('translate-y-0', 'opacity-100');
+                
+                // Ẩn đi sau 3 giây
+                setTimeout(() => {
+                    warningBox.classList.remove('translate-y-0', 'opacity-100');
+                    warningBox.classList.add('-translate-y-24', 'opacity-0');
+                }, 3000);
+            }
+        };
+
+        // 1. Chặn chuột phải (Context Menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showSecurityWarning();
+        });
+
+        // 2. Chặn các phím tắt
+        document.addEventListener('keydown', function(e) {
+            // Chặn F12 (Inspect Element)
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                showSecurityWarning();
+                return;
+            }
+
+            // Chặn tổ hợp phím có Ctrl
+            if (e.ctrlKey) {
+                // Chặn Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+                    e.preventDefault();
+                    showSecurityWarning();
+                    return;
+                }
+                
+                // Chặn Ctrl+U (View Source), Ctrl+S (Save), Ctrl+C (Copy), Ctrl+P (Print)
+                if (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's' || e.key === 'C' || e.key === 'c' || e.key === 'P' || e.key === 'p') {
+                    e.preventDefault();
+                    showSecurityWarning();
+                    return;
+                }
+            }
         });
     </script>
 </body>
