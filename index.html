@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đàm Phú Thành | Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        dark: '#050505',
+                        darker: '#020202',
+                        accent: {
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --purple: rgba(168, 85, 247, 1);
+            --cyan: rgba(6, 182, 212, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            cursor: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+
+        .loader-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #a855f7, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        /* Custom Cursor - Fully Optimized for no lag */
+        #cursor-dot, #cursor-outline {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            transform: translate3d(0, 0, 0); 
+            will-change: transform;
+        }
+
+        #cursor-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            margin: -3px 0 0 -3px;
+            mix-blend-mode: difference;
+        }
+
+        #cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: -20px 0 0 -20px;
+            transition: width 0.2s, height 0.2s, margin 0.2s, background-color 0.2s, border-color 0.2s;
+            z-index: 9998;
+        }
+
+        body.hovering #cursor-outline {
+            width: 60px;
+            height: 60px;
+            margin: -30px 0 0 -30px;
+            background-color: rgba(255,255,255,0.05);
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            z-index: -2;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+        }
+
+        .blob-container {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-bg 15s ease-in-out infinite alternate;
+            transform: translateZ(0);
+        }
+
+        .blob-purple {
+            background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(168,85,247,0) 70%);
+            width: 50vw;
+            height: 50vw;
+            top: -15%;
+            left: -10%;
+        }
+
+        .blob-cyan {
+            background: radial-gradient(circle, rgba(6,182,212,0.3) 0%, rgba(6,182,212,0) 70%);
+            width: 45vw;
+            height: 45vw;
+            bottom: -15%;
+            right: -10%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float-bg {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            100% { transform: translate3d(30px, 50px, 0) scale(1.05); }
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            transform: translateZ(0);
+        }
+
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transform: translateZ(0);
+        }
+
+        /* Hover Effects */
+        .hover-glow, .hover-glow-cyan {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .hover-glow:hover {
+            box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.4);
+            border-color: rgba(168, 85, 247, 0.5);
+            transform: translateY(-5px);
+        }
+        .hover-glow-cyan:hover {
+            box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.4);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-5px);
+        }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #a855f7, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+        }
+
+        /* Typing cursor */
+        .typed-cursor { opacity: 1; animation: blink 0.7s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Input Styles */
+        .glow-input {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glow-input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+
+        .interactive { cursor: none; }
+        .reveal { opacity: 0; transform: translateY(30px); }
+        
+        /* Tooltip */
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .group:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            bottom: 130%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="loader-text mb-4" id="loading-text">INITIALIZING...</div>
+        <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
+            <div id="loader-bar" class="h-full bg-gradient-to-r from-purple-500 to-cyan-500 w-0"></div>
+        </div>
+        <div class="mt-4 font-mono text-xs text-gray-500" id="loading-perc">0%</div>
+    </div>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+
+    <button id="backToTop" class="fixed bottom-6 right-6 w-12 h-12 glass-panel rounded-full text-white flex justify-center items-center opacity-0 pointer-events-none transition-all duration-300 hover:bg-white/10 hover:text-purple-400 interactive z-50 hover:scale-110">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <div class="bg-grid"></div>
+    <div class="blob-container">
+        <div class="blob blob-purple"></div>
+        <div class="blob blob-cyan"></div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-40 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="font-display font-bold text-2xl tracking-wider interactive hover:scale-105 transition-transform flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-purple-500 text-lg"></i>
+                <span class="text-gradient">thvnhX</span>
+            </a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#about" class="text-sm font-medium text-gray-300 hover:text-white interactive transition-colors relative group">
+                    About
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#projects" class="text-sm font-medium text-gray-300 hover:text-white interactive transition-colors relative group">
+                    Projects
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#utilities" class="text-sm font-medium text-gray-300 hover:text-white interactive transition-colors relative group">
+                    Utilities
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#experience" class="text-sm font-medium text-gray-300 hover:text-white interactive transition-colors relative group">
+                    Experience
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </div>
+            <div class="hidden md:flex items-center gap-4">
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-xs text-green-400 font-medium">Available for work</span>
+                </div>
+                <a href="#contact" class="px-5 py-2 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors interactive">
+                    Hire Me
+                </a>
+            </div>
+            <button class="md:hidden text-gray-300 hover:text-white interactive">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hero" class="min-h-screen flex items-center justify-center relative px-6 pt-20">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center z-10 w-full">
+                
+                <div class="text-left">
+                    <div class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-xs font-semibold tracking-widest uppercase text-purple-300 reveal">
+                        <i class="fa-solid fa-bolt"></i> Software Engineer & Web Dev
+                    </div>
+                    <h1 class="font-display text-5xl md:text-7xl font-bold mb-4 tracking-tight reveal leading-tight">
+                        Đàm Phú <br><span class="text-gradient text-glow">Thành</span>
+                    </h1>
+                    <h2 class="text-xl md:text-2xl text-gray-400 font-mono mb-6 h-8 reveal">
+                        > <span id="typed-text" class="text-cyan-400"></span><span class="typed-cursor text-cyan-400">_</span>
+                    </h2>
+                    <p class="text-gray-400 max-w-lg mb-8 leading-relaxed reveal text-lg">
+                        I build intelligent, scalable, and modern web applications with cutting-edge technologies, transitioning creative ideas into robust code.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center gap-4 reveal">
+                        <a href="#projects" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-semibold rounded-full hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105 transition-all interactive flex justify-center items-center gap-2 group">
+                            View My Work <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <a href="#contact" class="w-full sm:w-auto px-8 py-3.5 glass-panel text-white font-semibold rounded-full hover:bg-white/10 transition-colors interactive flex items-center justify-center gap-2">
+                            Get In Touch <i class="fa-regular fa-envelope"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="mt-10 flex gap-6 reveal">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors interactive text-xl"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-[#0077b5] transition-colors interactive text-xl"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-[#5865F2] transition-colors interactive text-xl"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-[#0088cc] transition-colors interactive text-xl"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+
+                <div class="hidden lg:block reveal relative animate-float">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-cyan-500/20 blur-3xl rounded-full"></div>
+                    
+                    <div class="glass-panel rounded-xl overflow-hidden border border-gray-700/50 shadow-2xl relative z-10 bg-[#0d0d0d]/90">
+                        <div class="flex items-center px-4 py-3 border-b border-gray-800 bg-black/50">
+                            <div class="flex gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <div class="mx-auto text-xs font-mono text-gray-500">developer.js</div>
+                        </div>
+                        <div class="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
+                            <p><span class="text-purple-400">const</span> <span class="text-blue-400">developer</span> <span class="text-white">=</span> <span class="text-yellow-300">{</span></p>
+                            <p class="ml-4"><span class="text-cyan-300">name</span><span class="text-white">:</span> <span class="text-green-400">'Đàm Phú Thành'</span><span class="text-white">,</span></p>
+                            <p class="ml-4"><span class="text-cyan-300">role</span><span class="text-white">:</span> <span class="text-green-400">'Software Engineer'</span><span class="text-white">,</span></p>
+                            <p class="ml-4"><span class="text-cyan-300">location</span><span class="text-white">:</span> <span class="text-green-400">'Hoa Lư, Ninh Bình'</span><span class="text-white">,</span></p>
+                            <p class="ml-4"><span class="text-cyan-300">passion</span><span class="text-white">:</span> <span class="text-green-400">'Building the future'</span><span class="text-white">,</span></p>
+                            <p class="ml-4"><span class="text-cyan-300">skills</span><span class="text-white">: [</span><span class="text-green-400">'Python'</span><span class="text-white">,</span> <span class="text-green-400">'JS'</span><span class="text-white">,</span> <span class="text-green-400">'C++'</span><span class="text-white">]</span></p>
+                            <p><span class="text-yellow-300">}</span><span class="text-white">;</span></p>
+                            <br>
+                            <p><span class="text-purple-400">function</span> <span class="text-blue-400">innovate</span><span class="text-white">() {</span></p>
+                            <p class="ml-4"><span class="text-purple-400">while</span> <span class="text-white">(</span><span class="text-cyan-300">alive</span><span class="text-white">) {</span></p>
+                            <p class="ml-8"><span class="text-blue-400">learn</span><span class="text-white">();</span></p>
+                            <p class="ml-8"><span class="text-blue-400">code</span><span class="text-white">();</span></p>
+                            <p class="ml-4"><span class="text-white">}</span></p>
+                            <p><span class="text-white">}</span></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <a href="#about" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center opacity-50 hover:opacity-100 transition-opacity interactive cursor-pointer">
+                <span class="text-[10px] uppercase tracking-[0.2em] mb-2 font-mono text-cyan-400 animate-pulse">Scroll Down</span>
+                <div class="w-px h-16 bg-gray-800 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-cyan-400 to-transparent animate-[scroll-down_1.5s_ease-in-out_infinite]"></div>
+                </div>
+            </a>
+        </section>
+
+        <section id="about" class="py-10 px-6 border-y border-white/5 bg-white/[0.01]">
+            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10 reveal">
+                <div class="text-center px-4">
+                    <h3 class="text-4xl font-display font-bold text-white mb-1"><span class="counter" data-target="5">0</span>+</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider font-mono">Years Coding</p>
+                </div>
+                <div class="text-center px-4">
+                    <h3 class="text-4xl font-display font-bold text-white mb-1"><span class="counter" data-target="200">0</span>+</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider font-mono">Projects Done</p>
+                </div>
+                <div class="text-center px-4">
+                    <h3 class="text-4xl font-display font-bold text-white mb-1"><span class="counter" data-target="100">0</span>+</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider font-mono">Happy Clients</p>
+                </div>
+                <div class="text-center px-4">
+                    <h3 class="text-4xl font-display font-bold text-white mb-1"><span class="counter" data-target="100">0</span>%</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider font-mono">Dedication</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-24 px-6 relative">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
+                    <div>
+                        <h2 class="font-display text-4xl md:text-5xl font-bold mb-3">Featured <span class="text-gradient">Projects</span></h2>
+                        <p class="text-gray-400 font-mono text-sm">> Select a project to view details</p>
+                    </div>
+                    <a href="#" class="mt-4 md:mt-0 text-sm font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-2 interactive transition-colors">
+                        View all projects <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-2 rounded-2xl overflow-hidden group hover-glow reveal cursor-pointer interactive">
+                        <div class="h-48 rounded-xl bg-gray-900 relative overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            
+                            <div class="absolute top-3 left-3 flex gap-2 z-10">
+                                <span class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 backdrop-blur-md rounded border border-blue-500/30"><i class="fas fa-star mr-1"></i>Web Dev</span>
+                            </div>
+                            <div class="absolute top-3 right-3 z-10">
+                                <span class="px-2 py-1 text-[10px] font-mono bg-black/50 text-gray-300 backdrop-blur-md rounded border border-white/10">Recent</span>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4">
+                            <h3 class="text-xl font-display font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">SMM Service Panel</h3>
+                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">A full-featured Social Media Marketing panel with automated API integrations for service delivery.</p>
+                            <div class="flex gap-2 flex-wrap mb-4">
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Next.js</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">API</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-2 rounded-2xl overflow-hidden group hover-glow-cyan reveal cursor-pointer interactive" style="transition-delay: 100ms;">
+                        <div class="h-48 rounded-xl bg-gray-900 relative overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div class="absolute top-3 left-3 flex gap-2 z-10">
+                                <span class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 backdrop-blur-md rounded border border-cyan-500/30">Backend</span>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4">
+                            <h3 class="text-xl font-display font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">Admission Tracker</h3>
+                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">Real-time web scraping bot monitoring high school admission stats, sending instant Discord alerts.</p>
+                            <div class="flex gap-2 flex-wrap mb-4">
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Python</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Discord API</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Scraping</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-2 rounded-2xl overflow-hidden group hover-glow reveal cursor-pointer interactive" style="transition-delay: 200ms;">
+                        <div class="h-48 rounded-xl bg-gray-900 relative overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div class="absolute top-3 left-3 flex gap-2 z-10">
+                                <span class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-pink-500/20 text-pink-300 backdrop-blur-md rounded border border-pink-500/30">E-Commerce</span>
+                            </div>
+                            <div class="absolute top-3 right-3 z-10">
+                                <span class="px-2 py-1 text-[10px] font-mono bg-black/50 text-gray-300 backdrop-blur-md rounded border border-white/10">Legacy</span>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4">
+                            <h3 class="text-xl font-display font-bold text-white mb-2 group-hover:text-pink-400 transition-colors">Game Account Shop</h3>
+                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">Automated digital storefront for Free Fire game accounts featuring instant delivery and user dashboards.</p>
+                            <div class="flex gap-2 flex-wrap mb-4">
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">PHP</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">MySQL</span>
+                                <span class="px-2 py-1 text-[10px] border border-gray-700 bg-gray-800/50 rounded text-gray-300">Bootstrap</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="utilities" class="py-20 px-6 relative border-t border-white/5 bg-gradient-to-b from-transparent to-[#0a0a0a]/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-12 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">Public <span class="text-gradient">Utilities</span></h2>
+                    <p class="text-gray-400 font-mono text-sm">> Free tools built for the community</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <a href="http://neontok.kacestore.online" target="_blank" class="glass-panel p-6 rounded-xl hover-glow group block interactive reveal">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-4 border border-purple-500/30 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-download text-purple-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">NeonTok</h3>
+                        <p class="text-sm text-gray-400 mb-4 line-clamp-3">100% Free, ad-free, and ultra-smooth TikTok video downloader. Download high-quality videos without watermarks instantly.</p>
+                        <div class="flex items-center text-xs text-purple-400 font-mono font-bold uppercase tracking-wider mt-auto">
+                            Launch Tool <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+
+                    <a href="#" class="glass-panel p-6 rounded-xl hover-glow-cyan group block interactive reveal" style="transition-delay: 100ms;">
+                        <div class="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center mb-4 border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-file-pen text-cyan-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">CloudNote</h3>
+                        <p class="text-sm text-gray-400 mb-4 line-clamp-3">100% Free online notepad with persistent cloud storage. Fast, secure, and accessible from any device.</p>
+                        <div class="flex items-center text-xs text-cyan-400 font-mono font-bold uppercase tracking-wider mt-auto">
+                            Launch Tool <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+
+                    <a href="#" class="glass-panel p-6 rounded-xl hover-glow group block interactive reveal" style="transition-delay: 200ms;">
+                        <div class="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center mb-4 border border-pink-500/30 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-key text-pink-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-pink-400 transition-colors">KeyGen Ultra</h3>
+                        <p class="text-sm text-gray-400 mb-4 line-clamp-3">Client-side secure password generator. Create military-grade passwords locally without sending data to servers.</p>
+                        <div class="flex items-center text-xs text-pink-400 font-mono font-bold uppercase tracking-wider mt-auto">
+                            Launch Tool <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+
+                    <a href="#" class="glass-panel p-6 rounded-xl hover-glow-cyan group block interactive reveal" style="transition-delay: 300ms;">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 border border-blue-500/30 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-code text-blue-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">SnippetShare</h3>
+                        <p class="text-sm text-gray-400 mb-4 line-clamp-3">Paste, save, and share code snippets with syntax highlighting support for over 50+ programming languages.</p>
+                        <div class="flex items-center text-xs text-blue-400 font-mono font-bold uppercase tracking-wider mt-auto">
+                            Launch Tool <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="py-24 px-6 relative">
+            <div class="max-w-6xl mx-auto glass-panel p-8 md:p-12 border-l-4 border-l-cyan-500 reveal">
+                <div class="flex flex-col md:flex-row gap-12 items-center">
+                    <div class="md:w-1/3">
+                        <h2 class="font-display text-3xl font-bold mb-4">Tech <span class="text-gradient">Stack</span></h2>
+                        <p class="text-gray-400 text-sm mb-6">Technologies I work with on a daily basis to build scalable applications.</p>
+                    </div>
+                    <div class="md:w-2/3 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-6">
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-python text-4xl text-gray-500 group-hover:text-[#3776AB] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">Python</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-js text-4xl text-gray-500 group-hover:text-[#F7DF1E] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">JavaScript</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-react text-4xl text-gray-500 group-hover:text-[#61DAFB] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">React.js</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-solid fa-c text-4xl text-gray-500 group-hover:text-[#00599C] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">C++</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-github text-4xl text-gray-500 group-hover:text-white transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">Git/GitHub</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-html5 text-4xl text-gray-500 group-hover:text-[#E34F26] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">HTML5</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-css3-alt text-4xl text-gray-500 group-hover:text-[#1572B6] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">CSS3</span>
+                        </div>
+                        <div class="flex justify-center group relative interactive">
+                            <i class="fa-brands fa-discord text-4xl text-gray-500 group-hover:text-[#5865F2] transition-all hover:scale-110"></i>
+                            <span class="tooltip px-2 py-1 bg-black/80 backdrop-blur text-[10px] text-white rounded border border-white/10 font-mono whitespace-nowrap">Discord API</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="py-24 px-6 relative">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">My <span class="text-gradient">Timeline</span></h2>
+                </div>
+
+                <div class="relative border-l border-gray-800 ml-4 md:ml-0">
+                    <div class="mb-12 ml-8 md:ml-10 relative reveal">
+                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-purple-500 rounded-full border-4 border-[#050505] shadow-[0_0_15px_rgba(168,85,247,0.8)] animate-pulse"></div>
+                        <div class="glass-panel p-6 hover-glow border-l-2 border-l-purple-500">
+                            <span class="text-xs font-mono text-purple-400 mb-2 block">> 2024 - Present</span>
+                            <h3 class="text-xl font-display font-bold text-white mb-1">Web Dev & Core Fundamentals</h3>
+                            <p class="text-sm text-gray-300 font-medium mb-3">Modern Tools & Algorithms</p>
+                            <p class="text-gray-400 text-sm leading-relaxed">
+                                Expanding into modern front-end frameworks and full-stack architecture. Previously, I dedicated significant time to studying data structures and algorithms in C++ as preparation for IT specialized schools (ôn chuyên Tin).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-12 ml-8 md:ml-10 relative reveal">
+                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-cyan-500 rounded-full border-4 border-[#050505]"></div>
+                        <div class="glass-panel p-6 hover-glow-cyan">
+                            <span class="text-xs font-mono text-cyan-400 mb-2 block">> 2022 - 2024</span>
+                            <h3 class="text-xl font-display font-bold text-white mb-1">Automation & Discord Bots</h3>
+                            <p class="text-sm text-gray-300 font-medium mb-3">Python / API Integration</p>
+                            <p class="text-gray-400 text-sm leading-relaxed">
+                                Built Python-based automation scripts and Discord bots. Focused on web scraping, data formatting, and bridging different APIs to streamline community management tasks.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ml-8 md:ml-10 relative reveal">
+                        <div class="absolute -left-[41px] md:-left-[45px] top-1 w-5 h-5 bg-gray-600 rounded-full border-4 border-[#050505]"></div>
+                        <div class="glass-panel p-6">
+                            <span class="text-xs font-mono text-gray-500 mb-2 block">> 2020 - 2022</span>
+                            <h3 class="text-xl font-display font-bold text-gray-300 mb-1">Early Web & Game Services</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">
+                                Ignited my passion for coding by developing automated game shops for Free Fire and setting up Social Media Marketing (SMM) web panels. Gained foundational knowledge in hosting, PHP, and database management.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 px-6 relative">
+            <div class="max-w-4xl mx-auto glass-panel p-8 md:p-12 reveal shadow-2xl shadow-purple-900/10">
+                <div class="flex flex-col md:flex-row gap-12">
+                    <div class="md:w-1/2">
+                        <h2 class="font-display text-4xl font-bold mb-4">Let's <span class="text-gradient">Talk</span></h2>
+                        <p class="text-gray-400 mb-8">Looking to start a project or just want to say hi? My inbox is always open.</p>
+                        
+                        <div class="space-y-4 font-mono text-sm">
+                            <div class="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors interactive w-fit">
+                                <i class="fa-solid fa-envelope text-xl w-6"></i> contact@kacestore.online
+                            </div>
+                            <div class="flex items-center gap-4 text-gray-300 hover:text-purple-400 transition-colors interactive w-fit">
+                                <i class="fa-solid fa-location-dot text-xl w-6 text-center"></i> Hoa Lư, Ninh Bình
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:w-1/2">
+                        <form id="contactForm" class="space-y-4">
+                            <div class="space-y-1">
+                                <input type="text" id="name" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Name />">
+                            </div>
+                            <div class="space-y-1">
+                                <input type="email" id="email" required class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive font-mono text-sm" placeholder="<Email />">
+                            </div>
+                            <div class="space-y-1">
+                                <textarea id="message" required rows="4" class="w-full bg-transparent glow-input rounded-lg px-4 py-3 text-white placeholder-gray-600 interactive resize-none font-mono text-sm" placeholder="<Message>...</Message>"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all flex justify-center items-center gap-2 interactive group">
+                                Execute Submit
+                                <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                            </button>
+                            <p id="formStatus" class="text-xs font-mono text-green-400 mt-2 hidden text-center">Message successfully transmitted.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-white/10 py-8 relative overflow-hidden bg-black/50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
+            <div class="text-gray-500 text-sm font-medium flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-purple-500"></i>
+                © 2026 thvnhx (Đàm Phú Thành).
+            </div>
+            
+            <div class="font-mono text-sm text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded bg-cyan-500/10">
+                <i class="fa-regular fa-clock mr-1"></i> <span id="realtime-clock">00:00:00</span>
+            </div>
+
+            <div class="flex gap-6">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors interactive"><i class="fab fa-github text-xl"></i></a>
+                <a href="#" class="text-gray-500 hover:text-[#5865F2] transition-colors interactive"><i class="fab fa-discord text-xl"></i></a>
+                <a href="#" class="text-gray-500 hover:text-[#0088cc] transition-colors interactive"><i class="fab fa-telegram text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+
+    <script>
+        // 1. Loading Screen
+        window.addEventListener('load', () => {
+            const loaderBar = document.getElementById('loader-bar');
+            const loader = document.getElementById('loader');
+            const perc = document.getElementById('loading-perc');
+            const text = document.getElementById('loading-text');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 20) + 10;
+                if(progress > 100) progress = 100;
+                
+                loaderBar.style.width = `${progress}%`;
+                perc.innerText = `${progress}%`;
+                
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    text.innerText = "SYSTEM READY";
+                    text.classList.add('text-green-400');
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                            initAnimations();
+                            countUpStats();
+                        }, 800);
+                    }, 500);
+                }
+            }, 100);
+        });
+
+        // 2. Optimized Lenis Smooth Scrolling - Lag fixed
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // 3. Custom Cursor - GPU Accelerated (No Lag)
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorOutline = document.getElementById('cursor-outline');
+        
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let outlineX = window.innerWidth / 2;
+        let outlineY = window.innerHeight / 2;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+        });
+
+        function renderCursor() {
+            outlineX += (mouseX - outlineX) * 0.15;
+            outlineY += (mouseY - outlineY) * 0.15;
+            
+            cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0)`;
+            requestAnimationFrame(renderCursor);
+        }
+        requestAnimationFrame(renderCursor);
+
+        // Hover states
+        const interactables = document.querySelectorAll('.interactive, a, button, input, textarea');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        // 4. Typing Effect
+        const words = ["Web Developer", "Python Scripter", "UI/UX Enthusiast"];
+        let i = 0;
+        let timer;
+
+        function typingEffect() {
+            let word = words[i].split("");
+            var loopTyping = function() {
+                if (word.length > 0) {
+                    document.getElementById('typed-text').innerHTML += word.shift();
+                } else {
+                    setTimeout(deletingEffect, 2000);
+                    return false;
+                };
+                timer = setTimeout(loopTyping, 100);
+            };
+            loopTyping();
+        };
+
+        function deletingEffect() {
+            let word = words[i].split("");
+            var loopDeleting = function() {
+                if (word.length > 0) {
+                    word.pop();
+                    document.getElementById('typed-text').innerHTML = word.join("");
+                } else {
+                    if (words.length > (i + 1)) { i++; } else { i = 0; };
+                    typingEffect();
+                    return false;
+                };
+                timer = setTimeout(loopDeleting, 50);
+            };
+            loopDeleting();
+        };
+        setTimeout(typingEffect, 2000);
+
+        // 5. Scroll Animations (GSAP)
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach((element) => {
+                gsap.to(element, {
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power3.out"
+                });
+            });
+
+            // Navbar Glass & BackToTop
+            const nav = document.querySelector('nav');
+            const btt = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    nav.classList.add('shadow-lg', 'shadow-purple-500/5');
+                    nav.style.background = 'rgba(5, 5, 5, 0.85)';
+                } else {
+                    nav.classList.remove('shadow-lg', 'shadow-purple-500/5');
+                    nav.style.background = 'rgba(5, 5, 5, 0.7)';
+                }
+
+                if (window.scrollY > 500) {
+                    btt.style.opacity = '1';
+                    btt.style.pointerEvents = 'auto';
+                    btt.style.transform = 'translateY(0)';
+                } else {
+                    btt.style.opacity = '0';
+                    btt.style.pointerEvents = 'none';
+                    btt.style.transform = 'translateY(20px)';
+                }
+            });
+            
+            btt.addEventListener('click', () => {
+                lenis.scrollTo(0, { duration: 1.5 });
+            });
+        }
+
+        // 6. Number Counter
+        function countUpStats() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                
+                let current = 0;
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                
+                ScrollTrigger.create({
+                    trigger: counter,
+                    start: "top 90%",
+                    once: true,
+                    onEnter: updateCounter
+                });
+            });
+        }
+
+        // 7. Clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('realtime-clock').innerText = timeString + " LOCAL";
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 8. Fake Form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const status = document.getElementById('formStatus');
+            const btn = e.target.querySelector('button');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            setTimeout(() => {
+                btn.innerHTML = 'Execute Submit <i class="fas fa-paper-plane"></i>';
+                status.style.display = 'block';
+                e.target.reset();
+                
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 3000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
